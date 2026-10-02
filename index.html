@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sushi Language - Apprendre en s'amusant</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍣</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #58CC02;
+      --primary-dark: #46A302;
+      --primary-light: #E5F9DB;
+      --coral: #FF5964;
+      --coral-dark: #D93B47;
+      --coral-light: #FFEAEB;
+      --blue: #1CB0F6;
+      --blue-dark: #1482BA;
+      --blue-light: #E3F6FF;
+      --yellow: #FFC800;
+      --yellow-dark: #D4A400;
+      --purple: #CE82FF;
+      --purple-dark: #9E40DA;
+      --bg: #F7F7F7;
+      --card-bg: #FFFFFF;
+      --text: #1A2E3B;
+      --text-muted: #777777;
+      --border: #E5E5E5;
+      --shadow-border: #D6DBE1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    #app-container {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100vh;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
+    }
+
+    /* 3D Duolingo Button */
+    .btn-3d {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: 0.5px;
+      padding: 14px 20px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      transition: transform 0.1s, box-shadow 0.1s;
+      user-select: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 0 var(--primary-dark);
+    }
+    .btn-primary:active {
+      transform: translateY(4px);
+      box-shadow: 0 0 0 var(--primary-dark);
+    }
+
+    .btn-blue {
+      background: var(--blue);
+      color: #fff;
+      box-shadow: 0 4px 0 var(--blue-dark);
+    }
+    .btn-blue:active {
+      transform: translateY(4px);
+      box-shadow: 0 0 0 var(--blue-dark);
+    }
+
+    .btn-coral {
+      background: var(--coral);
+      color: #fff;
+      box-shadow: 0 4px 0 var(--coral-dark);
+    }
+    .btn-coral:active {
+      transform: translateY(4px);
+      box-shadow: 0 0 0 var(--coral-dark);
+    }
+
+    .btn-gray {
+      background: #E5E5E5;
+      color: #666;
+      box-shadow: 0 4px 0 #CCC;
+    }
+    .btn-gray:active {
+      transform: translateY(4px);
+      box-shadow: 0 0 0 #CCC;
+    }
+
+    /* Bubbly 3D Card */
+    .card-3d {
+      background: var(--card-bg);
+      border-radius: 20px;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 0 var(--shadow-border);
+      padding: 16px;
+      transition: transform 0.1s, box-shadow 0.1s;
+      cursor: pointer;
+    }
+    .card-3d:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 var(--shadow-border);
+    }
+
+    /* Header Nav */
+    .top-bar {
+      background: #fff;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .top-bar-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--text);
+    }
+    .back-btn {
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 4px;
+    }
+    .stats-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 8px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .stat-streak { background: #FFF4E5; color: #CC7800; }
+    .stat-sushi { background: #FFF9E0; color: #D4A400; }
+    .stat-heart { background: var(--coral-light); color: var(--coral); }
+
+    /* Screen management */
+    .screen {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      padding: 18px;
+    }
+    .screen.active {
+      display: flex;
+    }
+
+    /* Mascot Avatar */
+    .mascot-circle {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 4px solid var(--primary);
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 6px 15px rgba(88, 204, 2, 0.2);
+    }
+    .mascot-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Inputs */
+    .form-group {
+      margin-bottom: 14px;
+      text-align: left;
+    }
+    .form-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: block;
+    }
+    .input-field {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .input-field:focus {
+      border-color: var(--primary);
+    }
+
+    /* Grid for Perso 3 square buttons */
+    .square-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+    .square-btn {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-radius: 24px;
+      background: #fff;
+      border: 2.5px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .square-btn-1 {
+      border-color: rgba(88, 204, 2, 0.5);
+      box-shadow: 0 5px 0 var(--primary-dark);
+    }
+    .square-btn-1:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 var(--primary-dark);
+    }
+    .square-btn-2 {
+      border-color: rgba(28, 176, 246, 0.5);
+      box-shadow: 0 5px 0 var(--blue-dark);
+    }
+    .square-btn-2:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 var(--blue-dark);
+    }
+    .square-btn-3 {
+      border-color: rgba(255, 150, 0, 0.5);
+      box-shadow: 0 5px 0 #CC7800;
+    }
+    .square-btn-3:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #CC7800;
+    }
+    .square-btn-add {
+      border: 2px dashed #B0BEC5;
+      background: #F0F4F8;
+      box-shadow: 0 4px 0 #CFD8DC;
+    }
+    .square-btn-add:active {
+      transform: translateY(4px);
+      box-shadow: 0 0 0 #CFD8DC;
+    }
+
+    .badge-pill {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 8px;
+    }
+    .emoji-circle {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+    }
+
+    /* List items for languages & subjects */
+    .list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .list-item-card {
+      background: #fff;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 0 var(--shadow-border);
+      border-radius: 18px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .list-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .flag-icon {
+      font-size: 32px;
+      margin-right: 12px;
+    }
+    .progress-bar-bg {
+      height: 8px;
+      background: #ECEFF1;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+
+    /* Quiz styling */
+    .quiz-question {
+      font-size: 19px;
+      font-weight: 900;
+      color: var(--text);
+      margin: 16px 0;
+    }
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .quiz-option {
+      background: #fff;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.15s;
+    }
+    .quiz-option.selected {
+      background: var(--blue-light);
+      border-color: var(--blue);
+    }
+    .quiz-option.correct {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary-dark);
+    }
+    .quiz-option.wrong {
+      background: var(--coral-light);
+      border-color: var(--coral);
+      color: var(--coral-dark);
+    }
+
+    /* Chess & Checkers Board styling */
+    .board-container {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      aspect-ratio: 1 / 1;
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 3px solid #37474F;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      margin: 16px 0;
+    }
+    .board-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .cell-light { background: #F0D9B5; }
+    .cell-dark { background: #B58863; }
+    .cell-checkers-dark { background: #455A64; }
+    .cell-checkers-light { background: #ECEFF1; }
+    .cell-selected { background: #FFF59D !important; }
+
+    .checkers-piece {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .piece-white { background: #FFFFFF; border: 2px solid #B0BEC5; }
+    .piece-red { background: #D32F2F; border: 2px solid #B71C1C; }
+
+    /* Modal for + Add Category */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal-backdrop.show {
+      display: flex;
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: 24px;
+      padding: 24px;
+      width: 100%;
+      max-width: 380px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-container">
+  
+  <!-- Global Top Bar -->
+  <div id="topBar" class="top-bar" style="display: none;">
+    <div class="top-bar-left">
+      <button id="backBtn" class="back-btn" onclick="app.goBack()">⬅️</button>
+      <div id="barTitle" class="top-bar-title">Sushi Language</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-pill stat-streak">🔥 <span id="statStreak">3</span></div>
+      <div class="stat-pill stat-sushi">🍣 <span id="statSushi">150</span></div>
+      <div class="stat-pill stat-heart">❤️ <span id="statHearts">5</span></div>
+    </div>
+  </div>
+
+  <!-- Screen 1: Auth Screen (Page d'accueil) -->
+  <div id="screenAuth" class="screen active" style="justify-content: center; text-align: center;">
+    <div class="mascot-circle">
+      <img src="sushi_mascot.jpg" alt="Mascotte Sushi" class="mascot-img" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>🍣</text></svg>'">
+    </div>
+    <h1 style="font-size: 28px; font-weight: 900; margin-bottom: 4px;">Sushi Language</h1>
+    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">Apprenez les langues et musclez votre esprit 🍣✨</p>
+
+    <div class="card-3d" style="text-align: left; cursor: default;">
+      <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 14px;" id="authTitle">Connexion</h2>
+      <div class="form-group">
+        <label class="form-label">Identifiant ou Email</label>
+        <input type="text" id="usernameInput" class="input-field" value="Sushinaute" placeholder="Ex: Sakura75">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <input type="password" id="passwordInput" class="input-field" value="sushi123" placeholder="••••••••">
+      </div>
+      <button class="btn-3d btn-primary" onclick="app.login()" style="margin-top: 10px;">SE CONNECTER 🍣</button>
+    </div>
+
+    <button class="btn-3d btn-blue" onclick="app.continueAsGuest()" style="margin-top: 14px;">CONTINUER EN INVITÉ 🚀</button>
+  </div>
+
+  <!-- Screen 2: Page Perso (3 Boutons Carrés) -->
+  <div id="screenPerso" class="screen">
+    <div class="card-3d" style="display: flex; align-items: center; gap: 14px; cursor: default; margin-bottom: 12px;">
+      <div style="font-size: 38px; background: var(--primary-light); width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">🍣</div>
+      <div style="flex: 1;">
+        <h3 id="welcomeUsername" style="font-size: 18px; font-weight: 900;">Konnichiwa, Sushinaute !</h3>
+        <p style="font-size: 12px; color: var(--text-muted);">Prêt pour votre entraînement quotidien ?</p>
+      </div>
+      <button onclick="app.logout()" style="background: none; border: none; font-size: 20px; cursor: pointer;">🚪</button>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+      <span style="font-size: 12px; font-weight: 900; color: var(--text-muted); letter-spacing: 1px;">VOS UNIVERS D'APPRENTISSAGE</span>
+      <span style="font-size: 12px; font-weight: 800; color: var(--primary-dark);">3 sections</span>
+    </div>
+
+    <!-- The 3 Square Buttons -->
+    <div id="squareGrid" class="square-grid">
+      <!-- Bouton 1: Langues -->
+      <div class="square-btn square-btn-1" onclick="app.openLanguages()">
+        <span class="badge-pill" style="background: rgba(88, 204, 2, 0.15); color: var(--primary-dark);">9 langues</span>
+        <div class="emoji-circle" style="background: rgba(88, 204, 2, 0.12);">🍣</div>
+        <div>
+          <h4 style="font-size: 17px; font-weight: 900; text-align: center;">Langues</h4>
+          <p style="font-size: 11px; color: var(--text-muted); text-align: center;">Voyage mondial</p>
+        </div>
+      </div>
+
+      <!-- Bouton 2: Jeux -->
+      <div class="square-btn square-btn-2" onclick="app.openGames()">
+        <span class="badge-pill" style="background: rgba(28, 176, 246, 0.15); color: var(--blue-dark);">2 jeux</span>
+        <div class="emoji-circle" style="background: rgba(28, 176, 246, 0.12);">♟️</div>
+        <div>
+          <h4 style="font-size: 17px; font-weight: 900; text-align: center;">Jeux</h4>
+          <p style="font-size: 11px; color: var(--text-muted); text-align: center;">Tactique d'esprit</p>
+        </div>
+      </div>
+
+      <!-- Bouton 3: Extra -->
+      <div class="square-btn square-btn-3" onclick="app.openExtra()">
+        <span class="badge-pill" style="background: rgba(255, 150, 0, 0.15); color: #CC7800;">4 matières</span>
+        <div class="emoji-circle" style="background: rgba(255, 150, 0, 0.12);">🎓</div>
+        <div>
+          <h4 style="font-size: 17px; font-weight: 900; text-align: center;">Extra</h4>
+          <p style="font-size: 11px; color: var(--text-muted); text-align: center;">Matières scolaires</p>
+        </div>
+      </div>
+
+      <!-- Extensibility: + Ajouter un univers -->
+      <div class="square-btn square-btn-add" onclick="app.showAddModal()">
+        <span style="font-size: 32px; color: var(--primary);">➕</span>
+        <div>
+          <h4 style="font-size: 15px; font-weight: 800; text-align: center;">+ Nouveau</h4>
+          <p style="font-size: 11px; color: var(--text-muted); text-align: center;">Ajouter un univers</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Motivational banner -->
+    <div style="background: #FFF9E0; border-radius: 16px; padding: 14px; display: flex; gap: 10px; align-items: center; margin-top: auto;">
+      <span style="font-size: 24px;">💡</span>
+      <p style="font-size: 13px; color: #7A6000; font-weight: 600;">5 minutes par jour suffisent pour entretenir la flamme du savoir !</p>
+    </div>
+  </div>
+
+  <!-- Screen 3: Langues Screen -->
+  <div id="screenLanguages" class="screen">
+    <div style="background: var(--primary-light); padding: 14px; border-radius: 16px; display: flex; gap: 12px; align-items: center; margin-bottom: 8px;">
+      <span style="font-size: 28px;">🥢</span>
+      <div>
+        <h4 style="font-size: 16px; font-weight: 900; color: var(--primary-dark);">9 langues disponibles</h4>
+        <p style="font-size: 12px;">Choisissez une langue pour lancer une leçon interactive.</p>
+      </div>
+    </div>
+    <div id="languagesList" class="list-container"></div>
+  </div>
+
+  <!-- Screen 4: Language Quiz Screen -->
+  <div id="screenLangQuiz" class="screen">
+    <div style="margin-bottom: 12px;">
+      <span style="font-size: 12px; font-weight: 900; color: var(--primary-dark); letter-spacing: 1px;">LEÇON INTERACTIVE</span>
+      <div id="quizPromptTitle" class="quiz-question">Comment dit-on « Bonjour » ?</div>
+    </div>
+    <div id="quizWordBox" style="background: #fff; border: 2px solid var(--border); border-radius: 16px; padding: 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+      <span style="font-size: 26px;">🍣</span>
+      <span id="quizWordText" style="font-size: 18px; font-weight: 800; color: var(--primary-dark);">Bonjour</span>
+    </div>
+    <div id="quizOptionsContainer" class="quiz-options"></div>
+    <div id="quizFeedbackBox" style="display: none; border-radius: 16px; padding: 14px; margin-bottom: 14px;"></div>
+    <div style="margin-top: auto;">
+      <button id="quizActionBtn" class="btn-3d btn-primary" onclick="app.checkQuizAnswer()">VÉRIFIER</button>
+    </div>
+  </div>
+
+  <!-- Screen 5: Jeux Screen -->
+  <div id="screenGames" class="screen">
+    <div style="background: var(--blue-light); padding: 14px; border-radius: 16px; display: flex; gap: 12px; align-items: center; margin-bottom: 8px;">
+      <span style="font-size: 28px;">🧠</span>
+      <div>
+        <h4 style="font-size: 16px; font-weight: 900; color: var(--blue-dark);">Jeux d'esprit</h4>
+        <p style="font-size: 12px;">Affrontez les énigmes et maîtrisez les stratégies.</p>
+      </div>
+    </div>
+    <div class="list-container">
+      <!-- Échecs -->
+      <div class="list-item-card" onclick="app.openChess()">
+        <div class="list-item-header">
+          <div style="display: flex; align-items: center;">
+            <span class="flag-icon">♟️</span>
+            <div>
+              <h3 style="font-size: 18px; font-weight: 900;">Échecs</h3>
+              <span class="badge-pill" style="background: var(--primary-light); color: var(--primary-dark);">Stratégie & Puzzles</span>
+            </div>
+          </div>
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted);">Résolvez des puzzles tactiques ou analysez l'échiquier !</p>
+        <button class="btn-3d btn-primary" style="padding: 10px;">JOUER AUX ÉCHECS 🎮</button>
+      </div>
+
+      <!-- Dames -->
+      <div class="list-item-card" onclick="app.openCheckers()">
+        <div class="list-item-header">
+          <div style="display: flex; align-items: center;">
+            <span class="flag-icon">⚪⚫</span>
+            <div>
+              <h3 style="font-size: 18px; font-weight: 900;">Dames</h3>
+              <span class="badge-pill" style="background: var(--blue-light); color: var(--blue-dark);">Plateau Classique</span>
+            </div>
+          </div>
+        </div>
+        <p style="font-size: 12px; color: var(--text-muted);">Capturez les pions adverses sur le damier interactif 8x8.</p>
+        <button class="btn-3d btn-blue" style="padding: 10px;">JOUER AUX DAMES 🎮</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 6: Chess Playable Screen -->
+  <div id="screenChess" class="screen">
+    <div id="chessStatus" style="background: #fff; border: 2px solid var(--border); border-radius: 14px; padding: 12px; text-align: center; font-weight: 800; font-size: 13px;">
+      🎯 Les Blancs jouent et gagnent (Mat en 1 coup) !
+    </div>
+    <div id="chessBoard" class="board-container"></div>
+    <div style="display: flex; gap: 10px; margin-top: auto;">
+      <button class="btn-3d btn-gray" onclick="app.resetChess()" style="flex: 1;">RÉINITIALISER</button>
+      <button class="btn-3d btn-primary" onclick="app.hintChess()" style="flex: 1;">INDICE 💡</button>
+    </div>
+  </div>
+
+  <!-- Screen 7: Checkers Playable Screen -->
+  <div id="screenCheckers" class="screen">
+    <div id="checkersStatus" style="background: #fff; border: 2px solid var(--border); border-radius: 14px; padding: 12px; text-align: center; font-weight: 800; font-size: 13px;">
+      ⚪ À vous de jouer (Pions Blancs) !
+    </div>
+    <div id="checkersBoard" class="board-container"></div>
+    <button class="btn-3d btn-blue" onclick="app.resetCheckers()" style="margin-top: auto;">NOUVELLE PARTIE 🔄</button>
+  </div>
+
+  <!-- Screen 8: Extra Screen (Matières scolaires) -->
+  <div id="screenExtra" class="screen">
+    <div style="background: #FFF9E0; padding: 14px; border-radius: 16px; display: flex; gap: 12px; align-items: center; margin-bottom: 8px;">
+      <span style="font-size: 28px;">🎓</span>
+      <div>
+        <h4 style="font-size: 16px; font-weight: 900; color: #D4A400;">Matières Scolaires</h4>
+        <p style="font-size: 12px;">Révisez la géographie, les maths, la géométrie et les sciences.</p>
+      </div>
+    </div>
+    <div id="subjectsList" class="list-container"></div>
+  </div>
+
+</div>
+
+<!-- Modal Add Category -->
+<div id="addModal" class="modal-backdrop">
+  <div class="modal-box">
+    <h3 style="font-size: 18px; font-weight: 900; margin-bottom: 12px;">Ajouter un univers</h3>
+    <div class="form-group">
+      <label class="form-label">Titre (ex: Histoire)</label>
+      <input type="text" id="newCatTitle" class="input-field" placeholder="Titre de la section">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Sous-titre</label>
+      <input type="text" id="newCatSub" class="input-field" placeholder="Courte description">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Émoji</label>
+      <input type="text" id="newCatEmoji" class="input-field" value="🍱" placeholder="🍱">
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 18px;">
+      <button class="btn-3d btn-gray" onclick="app.hideAddModal()" style="flex: 1;">ANNULER</button>
+      <button class="btn-3d btn-primary" onclick="app.confirmAddCategory()" style="flex: 1;">AJOUTER</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Data
+const appData = {
+  user: {
+    username: "Sushinaute",
+    streak: 3,
+    sushi: 150,
+    hearts: 5
+  },
+  languages: [
+    { id: "it", name: "Italien", flag: "🇮🇹", greeting: "Ciao ! Come stai ?", level: "A1 Débutant", progress: 40, lessons: "4/10",
+      q: { prompt: "Comment dit-on « Bonjour » en italien ?", word: "Bonjour", options: ["Ciao", "Grazie", "Prego", "Buonasera"], correct: 0, exp: "« Ciao » signifie bonjour et au revoir de manière amicale !" }
+    },
+    { id: "es", name: "Espagnol", flag: "🇪🇸", greeting: "¡Hola! ¿Cómo estás?", level: "A2 Intermédiaire", progress: 65, lessons: "6/10",
+      q: { prompt: "Comment dit-on « Merci beaucoup » en espagnol ?", word: "Merci beaucoup", options: ["De nada", "Muchas gracias", "Por favor", "Hola amigo"], correct: 1, exp: "« Muchas gracias » exprime la gratitude chaleureuse !" }
+    },
+    { id: "fr", name: "Français", flag: "🇫🇷", greeting: "Bonjour ! Bienvenue.", level: "Natif / Perfectionnement", progress: 90, lessons: "9/10",
+      q: { prompt: "Quel est le pluriel du mot « bijou » ?", word: "Bijou", options: ["Bijoux", "Bijous", "Bijou", "Bijoues"], correct: 0, exp: "Bijou prend un « x » au pluriel parmi les 7 exceptions en -ou !" }
+    },
+    { id: "ja", name: "Japonais", flag: "🇯🇵", greeting: "こんにちは！ (Konnichiwa)", level: "N5 Débutant", progress: 50, lessons: "5/10",
+      q: { prompt: "Que signifie « Arigatou » (ありがとう) ?", word: "Arigatou", options: ["Bonjour", "Pardon", "Merci", "Au revoir"], correct: 2, exp: "« Arigatou » est la formule japonaise pour dire merci !" }
+    },
+    { id: "zh", name: "Chinois", flag: "🇨🇳", greeting: "你好！ (Nǐ hǎo)", level: "HSK 1", progress: 20, lessons: "2/10",
+      q: { prompt: "Comment salue-t-on avec « Nǐ hǎo » ?", word: "Nǐ hǎo", options: ["Bonjour", "Merci", "Santé !", "Bon appétit"], correct: 0, exp: "« Nǐ » (toi) + « hǎo » (bien) forme « Bonjour » !" }
+    },
+    { id: "pt", name: "Portugais", flag: "🇵🇹", greeting: "Olá! Tudo bem?", level: "A1 Débutant", progress: 30, lessons: "3/10",
+      q: { prompt: "Comment dit-on « S'il vous plaît » en portugais ?", word: "S'il vous plaît", options: ["Por favor", "Obrigado", "Com licença", "De nada"], correct: 0, exp: "« Por favor » est la formule de politesse usuelle." }
+    },
+    { id: "ar", name: "Arabe", flag: "🇸🇦", greeting: "مرحبا ! (Marhaban)", level: "A1 Débutant", progress: 25, lessons: "2/10",
+      q: { prompt: "Que signifie « Marhaban » ?", word: "Marhaban", options: ["Bienvenue / Bonjour", "Bonne nuit", "Merci", "À demain"], correct: 0, exp: "« Marhaban » souhaite chaleureusement la bienvenue !" }
+    },
+    { id: "en", name: "Anglais", flag: "🇬🇧", greeting: "Hello! How are you?", level: "B1 Intermédiaire", progress: 80, lessons: "8/10",
+      q: { prompt: "Que signifie l'expression « Piece of cake » ?", word: "Piece of cake", options: ["Un gâteau", "C'est très facile !", "Une part", "Un problème"], correct: 1, exp: "« Piece of cake » veut dire que c'est un jeu d'enfant !" }
+    },
+    { id: "de", name: "Allemand", flag: "🇩🇪", greeting: "Guten Tag! Wie geht's?", level: "A1 Débutant", progress: 35, lessons: "3/10",
+      q: { prompt: "Comment dit-on « Merci » en allemand ?", word: "Merci", options: ["Bitte", "Danke", "Hallo", "Tschüss"], correct: 1, exp: "« Danke » est le mot pour remercier en allemand." }
+    }
+  ],
+  subjects: [
+    { id: "geo", name: "Géographie", icon: "🌍", badge: "Capitales & Monde", color: "#1CB0F6",
+      desc: "Capitales, continents, fleuves et merveilles de la planète Terre.",
+      q: { prompt: "Quelle est la capitale du Japon ?", word: "Capitale", options: ["Kyoto", "Tokyo", "Osaka", "Nagoya"], correct: 1, exp: "Tokyo est la capitale et la plus grande métropole du Japon !" }
+    },
+    { id: "math", name: "Mathématiques", icon: "➕", badge: "Calcul Mental", color: "#58CC02",
+      desc: "Priorités opératoires, tables de multiplication et logique.",
+      q: { prompt: "Combien font : 15 + 5 x 2 ?", word: "Priorité", options: ["40", "25", "30", "35"], correct: 1, exp: "La multiplication prime : 5 x 2 = 10, puis 15 + 10 = 25 !" }
+    },
+    { id: "geometry", name: "Géométrie", icon: "📐", badge: "Formes & Angles", color: "#FF9600",
+      desc: "Angles, triangles, polygones et théorèmes de géométrie.",
+      q: { prompt: "Quelle est la somme des angles d'un triangle ?", word: "Angles", options: ["90°", "180°", "270°", "360°"], correct: 1, exp: "Dans un triangle euclidien, la somme vaut toujours 180° !" }
+    },
+    { id: "science", name: "Sciences", icon: "🔬", badge: "Biologie & Physique", color: "#CE82FF",
+      desc: "Chimie, astronomie, corps humain et lois de la nature.",
+      q: { prompt: "Quelle est la formule chimique de l'eau ?", word: "Chimie", options: ["CO2", "H2O", "NaCl", "O2"], correct: 1, exp: "Deux hydrogènes et un oxygène forment H2O !" }
+    }
+  ]
+};
+
+// Web Audio tone player
+function playTone(freq, type, duration) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+    osc.stop(ctx.currentTime + duration);
+  } catch(e) {}
+}
+
+const app = {
+  stack: ["screenAuth"],
+  currentQuiz: null,
+  selectedOption: null,
+  isQuizChecked: false,
+
+  init() {
+    this.updateStats();
+    this.renderLanguages();
+    this.renderSubjects();
+    this.initChess();
+    this.initCheckers();
+  },
+
+  updateStats() {
+    document.getElementById("statStreak").innerText = appData.user.streak;
+    document.getElementById("statSushi").innerText = appData.user.sushi;
+    document.getElementById("statHearts").innerText = appData.user.hearts;
+  },
+
+  showScreen(id, title) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    const target = document.getElementById(id);
+    if (target) target.classList.add("active");
+
+    const topBar = document.getElementById("topBar");
+    if (id === "screenAuth") {
+      topBar.style.display = "none";
+    } else {
+      topBar.style.display = "flex";
+      document.getElementById("barTitle").innerText = title || "Sushi Language";
+    }
+  },
+
+  navigate(id, title) {
+    this.stack.push(id);
+    this.showScreen(id, title);
+  },
+
+  goBack() {
+    if (this.stack.length > 1) {
+      this.stack.pop();
+      const prev = this.stack[this.stack.length - 1];
+      let title = "Sushi Language";
+      if (prev === "screenPerso") title = "Mon Espace Perso";
+      if (prev === "screenLanguages") title = "Langues";
+      if (prev === "screenGames") title = "Jeux d'Esprit";
+      if (prev === "screenExtra") title = "Matières Scolaires";
+      this.showScreen(prev, title);
+    }
+  },
+
+  login() {
+    const val = document.getElementById("usernameInput").value.trim();
+    if (val) appData.user.username = val;
+    this.continueAsGuest();
+  },
+
+  continueAsGuest() {
+    document.getElementById("welcomeUsername").innerText = `Konnichiwa, ${appData.user.username} !`;
+    this.stack = ["screenPerso"];
+    this.showScreen("screenPerso", "Mon Espace Perso");
+    playTone(587, "sine", 0.2);
+  },
+
+  logout() {
+    this.stack = ["screenAuth"];
+    this.showScreen("screenAuth");
+  },
+
+  openLanguages() {
+    this.navigate("screenLanguages", "Langues");
+  },
+
+  openGames() {
+    this.navigate("screenGames", "Jeux d'Esprit");
+  },
+
+  openExtra() {
+    this.navigate("screenExtra", "Matières Scolaires");
+  },
+
+  renderLanguages() {
+    const container = document.getElementById("languagesList");
+    container.innerHTML = "";
+    appData.languages.forEach(l => {
+      const card = document.createElement("div");
+      card.className = "list-item-card";
+      card.onclick = () => app.startQuiz(l.q, l.name);
+      card.innerHTML = `
+        <div class="list-item-header">
+          <div style="display: flex; align-items: center;">
+            <span class="flag-icon">${l.flag}</span>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h3 style="font-size: 18px; font-weight: 900;">${l.name}</h3>
+                <span class="badge-pill" style="background: var(--blue-light); color: var(--blue-dark);">${l.level}</span>
+              </div>
+              <p style="font-size: 13px; color: var(--text-muted);">${l.greeting}</p>
+            </div>
+          </div>
+          <span style="font-weight: 800; font-size: 13px; color: var(--primary-dark);">${l.lessons}</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" style="width: ${l.progress}%;"></div>
+        </div>
+        <button class="btn-3d btn-primary" style="padding: 10px; font-size: 14px;">PRATIQUER ⚡</button>
+      `;
+      container.appendChild(card);
+    });
+  },
+
+  renderSubjects() {
+    const container = document.getElementById("subjectsList");
+    container.innerHTML = "";
+    appData.subjects.forEach(s => {
+      const card = document.createElement("div");
+      card.className = "list-item-card";
+      card.onclick = () => app.startQuiz(s.q, s.name);
+      card.innerHTML = `
+        <div class="list-item-header">
+          <div style="display: flex; align-items: center;">
+            <span class="flag-icon">${s.icon}</span>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h3 style="font-size: 18px; font-weight: 900;">${s.name}</h3>
+                <span class="badge-pill" style="background: ${s.color}22; color: ${s.color};">${s.badge}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted);">${s.desc}</p>
+        <button class="btn-3d btn-primary" style="padding: 10px; font-size: 14px; background: ${s.color}; box-shadow: 0 4px 0 #999;">LANCER LE QUIZ 📝</button>
+      `;
+      container.appendChild(card);
+    });
+  },
+
+  startQuiz(qData, title) {
+    this.currentQuiz = qData;
+    this.selectedOption = null;
+    this.isQuizChecked = false;
+
+    document.getElementById("quizPromptTitle").innerText = qData.prompt;
+    document.getElementById("quizWordText").innerText = `« ${qData.word} »`;
+    document.getElementById("quizFeedbackBox").style.display = "none";
+    document.getElementById("quizActionBtn").innerText = "VÉRIFIER";
+    document.getElementById("quizActionBtn").className = "btn-3d btn-primary";
+
+    const optContainer = document.getElementById("quizOptionsContainer");
+    optContainer.innerHTML = "";
+    qData.options.forEach((opt, idx) => {
+      const div = document.createElement("div");
+      div.className = "quiz-option";
+      div.innerText = opt;
+      div.onclick = () => {
+        if (app.isQuizChecked) return;
+        app.selectedOption = idx;
+        document.querySelectorAll(".quiz-option").forEach(el => el.classList.remove("selected"));
+        div.classList.add("selected");
+      };
+      optContainer.appendChild(div);
+    });
+
+    this.navigate("screenLangQuiz", title || "Quiz");
+  },
+
+  checkQuizAnswer() {
+    if (this.selectedOption === null) return;
+
+    if (!this.isQuizChecked) {
+      this.isQuizChecked = true;
+      const isCorrect = this.selectedOption === this.currentQuiz.correct;
+      const fb = document.getElementById("quizFeedbackBox");
+      fb.style.display = "block";
+
+      const options = document.querySelectorAll(".quiz-option");
+      options[this.currentQuiz.correct].classList.add("correct");
+
+      if (isCorrect) {
+        fb.style.background = "var(--primary-light)";
+        fb.style.color = "var(--primary-dark)";
+        fb.innerHTML = `<strong>🎉 Excellent !</strong><br>${this.currentQuiz.exp}`;
+        appData.user.sushi += 20;
+        this.updateStats();
+        playTone(659, "triangle", 0.3);
+      } else {
+        options[this.selectedOption].classList.add("wrong");
+        fb.style.background = "var(--coral-light)";
+        fb.style.color = "var(--coral-dark)";
+        fb.innerHTML = `<strong>💡 Oups !</strong><br>${this.currentQuiz.exp}`;
+        appData.user.hearts = Math.max(0, appData.user.hearts - 1);
+        this.updateStats();
+        playTone(220, "sawtooth", 0.3);
+      }
+
+      document.getElementById("quizActionBtn").innerText = "CONTINUER 🎉";
+    } else {
+      this.goBack();
+    }
+  },
+
+  // Chess Mini Game
+  chessState: {},
+  selectedChessSquare: null,
+  chessWon: false,
+
+  openChess() {
+    this.navigate("screenChess", "Échecs Tactiques");
+    this.resetChess();
+  },
+
+  resetChess() {
+    this.chessState = {
+      "0,4": "♚", "1,5": "♟", "1,6": "♟", "1,7": "♟",
+      "5,5": "♕", "4,2": "♗", "7,4": "♔"
+    };
+    this.selectedChessSquare = null;
+    this.chessWon = false;
+    document.getElementById("chessStatus").innerText = "🎯 Les Blancs jouent et gagnent (Mat en 1 coup) !";
+    document.getElementById("chessStatus").style.background = "#fff";
+    this.renderChess();
+  },
+
+  hintChess() {
+    document.getElementById("chessStatus").innerText = "💡 Indice : La Dame en f3 peut attaquer la case faible f7 !";
+  },
+
+  initChess() {},
+
+  renderChess() {
+    const board = document.getElementById("chessBoard");
+    board.innerHTML = "";
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const cell = document.createElement("div");
+        const isLight = (r + c) % 2 === 0;
+        cell.className = `board-cell ${isLight ? "cell-light" : "cell-dark"}`;
+        const key = `${r},${c}`;
+        if (this.selectedChessSquare === key) cell.classList.add("cell-selected");
+        const piece = this.chessState[key] || "";
+        cell.innerText = piece;
+        cell.onclick = () => app.handleChessClick(r, c);
+        board.appendChild(cell);
+      }
+    }
+  },
+
+  handleChessClick(r, c) {
+    if (this.chessWon) return;
+    const key = `${r},${c}`;
+    const piece = this.chessState[key];
+
+    if (!this.selectedChessSquare) {
+      if (piece === "♕" || piece === "♗" || piece === "♔") {
+        this.selectedChessSquare = key;
+        this.renderChess();
+      }
+    } else {
+      if (this.selectedChessSquare === "5,5" && r === 1 && c === 5) {
+        delete this.chessState["5,5"];
+        this.chessState["1,5"] = "♕";
+        this.chessWon = true;
+        document.getElementById("chessStatus").innerText = "🏆 Échec et Mat ! Dame protégée par le Fou. +50 🍣 !";
+        document.getElementById("chessStatus").style.background = "var(--primary-light)";
+        appData.user.sushi += 50;
+        this.updateStats();
+        playTone(784, "sine", 0.4);
+      } else if (this.selectedChessSquare !== key) {
+        const p = this.chessState[this.selectedChessSquare];
+        delete this.chessState[this.selectedChessSquare];
+        this.chessState[key] = p;
+        document.getElementById("chessStatus").innerText = "Coup joué. Trouvez le mat direct en f7 !";
+      }
+      this.selectedChessSquare = null;
+      this.renderChess();
+    }
+  },
+
+  // Checkers Game
+  checkersState: {},
+  selectedChecker: null,
+  checkersTurn: "white",
+
+  openCheckers() {
+    this.navigate("screenCheckers", "Jeu de Dames");
+    this.resetCheckers();
+  },
+
+  resetCheckers() {
+    this.checkersState = {};
+    for (let r = 0; r < 3; r++) {
+      for (let c = 0; c < 8; c++) {
+        if ((r + c) % 2 !== 0) this.checkersState[`${r},${c}`] = { color: "red", king: false };
+      }
+    }
+    for (let r = 5; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        if ((r + c) % 2 !== 0) this.checkersState[`${r},${c}`] = { color: "white", king: false };
+      }
+    }
+    this.selectedChecker = null;
+    this.checkersTurn = "white";
+    document.getElementById("checkersStatus").innerText = "⚪ À vous de jouer (Pions Blancs) !";
+    this.renderCheckers();
+  },
+
+  initCheckers() {},
+
+  renderCheckers() {
+    const board = document.getElementById("checkersBoard");
+    board.innerHTML = "";
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const cell = document.createElement("div");
+        const isPlayable = (r + c) % 2 !== 0;
+        cell.className = `board-cell ${isPlayable ? "cell-checkers-dark" : "cell-checkers-light"}`;
+        const key = `${r},${c}`;
+        if (this.selectedChecker === key) cell.classList.add("cell-selected");
+
+        const piece = this.checkersState[key];
+        if (piece) {
+          const pDiv = document.createElement("div");
+          pDiv.className = `checkers-piece ${piece.color === "white" ? "piece-white" : "piece-red"}`;
+          if (piece.king) pDiv.innerHTML = "👑";
+          cell.appendChild(pDiv);
+        }
+
+        if (isPlayable) {
+          cell.onclick = () => app.handleCheckersClick(r, c);
+        }
+        board.appendChild(cell);
+      }
+    }
+  },
+
+  handleCheckersClick(r, c) {
+    const key = `${r},${c}`;
+    const piece = this.checkersState[key];
+
+    if (!this.selectedChecker) {
+      if (piece && piece.color === this.checkersTurn) {
+        this.selectedChecker = key;
+        this.renderCheckers();
+      }
+    } else {
+      const [sr, sc] = this.selectedChecker.split(",").map(Number);
+      const moving = this.checkersState[this.selectedChecker];
+      if (!piece && moving) {
+        const dr = r - sr;
+        const dc = c - sc;
+        const isForward = moving.king || (moving.color === "white" ? dr < 0 : dr > 0);
+
+        if (Math.abs(dr) === 1 && Math.abs(dc) === 1 && isForward) {
+          delete this.checkersState[this.selectedChecker];
+          const king = moving.king || (moving.color === "white" && r === 0) || (moving.color === "red" && r === 7);
+          this.checkersState[key] = { color: moving.color, king };
+          this.checkersTurn = this.checkersTurn === "white" ? "red" : "white";
+          document.getElementById("checkersStatus").innerText = this.checkersTurn === "white" ? "⚪ Tour aux Blancs !" : "🔴 Tour aux Rouges !";
+          playTone(440, "sine", 0.1);
+        } else if (Math.abs(dr) === 2 && Math.abs(dc) === 2) {
+          const mr = sr + dr / 2;
+          const mc = sc + dc / 2;
+          const jumped = this.checkersState[`${mr},${mc}`];
+          if (jumped && jumped.color !== moving.color) {
+            delete this.checkersState[this.selectedChecker];
+            delete this.checkersState[`${mr},${mc}`];
+            const king = moving.king || (moving.color === "white" && r === 0) || (moving.color === "red" && r === 7);
+            this.checkersState[key] = { color: moving.color, king };
+            this.checkersTurn = this.checkersTurn === "white" ? "red" : "white";
+            document.getElementById("checkersStatus").innerText = "🎉 Prise réussie !";
+            playTone(550, "triangle", 0.2);
+          }
+        }
+      }
+      this.selectedChecker = null;
+      this.renderCheckers();
+    }
+  },
+
+  // Extensibility Modal
+  showAddModal() {
+    document.getElementById("addModal").classList.add("show");
+  },
+
+  hideAddModal() {
+    document.getElementById("addModal").classList.remove("show");
+  },
+
+  confirmAddCategory() {
+    const title = document.getElementById("newCatTitle").value.trim() || "Nouvel Univers";
+    const sub = document.getElementById("newCatSub").value.trim() || "Section personnalisée";
+    const emoji = document.getElementById("newCatEmoji").value.trim() || "🍱";
+
+    const grid = document.getElementById("squareGrid");
+    const addBtn = grid.querySelector(".square-btn-add");
+
+    const newBtn = document.createElement("div");
+    newBtn.className = "square-btn square-btn-3";
+    newBtn.onclick = () => app.openExtra();
+    newBtn.innerHTML = `
+      <span class="badge-pill" style="background: rgba(206, 130, 255, 0.2); color: var(--purple-dark);">Découverte</span>
+      <div class="emoji-circle" style="background: rgba(206, 130, 255, 0.15);">${emoji}</div>
+      <div>
+        <h4 style="font-size: 17px; font-weight: 900; text-align: center;">${title}</h4>
+        <p style="font-size: 11px; color: var(--text-muted); text-align: center;">${sub}</p>
+      </div>
+    `;
+
+    grid.insertBefore(newBtn, addBtn);
+    this.hideAddModal();
+    playTone(523, "sine", 0.2);
+  }
+};
+
+window.addEventListener("DOMContentLoaded", () => {
+  app.init();
+});
+</script>
+
+</body>
+</html>
